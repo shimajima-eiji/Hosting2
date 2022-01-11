@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダイスロール</title>
+  </head>
+
+  <body>
+    <h1>ダイスロールしたら出目をここに表示</h1>
+    <button onclick="dice()">ダイスロール</button>
+    <p>
+      <img id="dice" src="" />
+    </p>
+  </body>
+  <script>
+    function dice()
+    {
+      let path = "/__Backup_Images/Hosting/dice6/";
+      document.getElementById( "dice" ).src = path + parseInt( Math.random() * 6 + 1 ) + ".png";
+    }
+  </script>
+
+</html>
