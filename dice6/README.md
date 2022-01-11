@@ -1,1 +1,1 @@
-https://shimajima-eiji.github.io/Hosting2/Hosting2/dice6
+https://shimajima-eiji.github.io/Hosting2/dice6
