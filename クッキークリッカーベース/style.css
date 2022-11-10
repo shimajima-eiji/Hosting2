@@ -1,0 +1,17 @@
+table tr td {
+    text-align: right;
+}
+
+table tr td button {
+    width: 100%;
+}
+
+textarea {
+    resize: none;
+    width: 400px;
+    height: 80px;
+}
+
+textarea:disabled {
+    background-color: white;
+}
