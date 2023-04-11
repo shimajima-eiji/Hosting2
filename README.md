@@ -2,6 +2,8 @@
 Hostingリポジトリを汚染しすぎたのでクリーンな環境構築。ブランチはルート直下で管理する。GASのコードはGASリポジトリでブランチ管理する
 
 ## GitHub PagesのJekyllプレビュー
+[公式でサポートしているテーマ: ](https://pages.github.com/themes/)https://pages.github.com/themes/)https://pages.github.com/themes/ を集約
+
 - [Architect](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Architect/)
 - [Cayman](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Cayman/)
 - [Dinky](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Dinky/)
