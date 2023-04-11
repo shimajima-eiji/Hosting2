@@ -11,7 +11,7 @@ Hostingリポジトリを汚染しすぎたのでクリーンな環境構築。�
 - [Leap day](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Leap-day/)
 - [Merlot](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Merlot/)
 - [Midnight](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Midnight/)
-- [Minima](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Minima/)
+- [Minima（チートシート有）](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Minima/)
 - [Minimal](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Minimal/)
 - [Modernist](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Modernist/)
 - [Slate](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Slate/)
