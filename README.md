@@ -4,6 +4,7 @@ Hostingリポジトリを汚染しすぎたのでクリーンな環境構築。�
 ## GitHub PagesのJekyllプレビュー
 [公式でサポートしているテーマ: ](https://pages.github.com/themes/)https://pages.github.com/themes/)https://pages.github.com/themes/ を集約
 
+- [no-theme](https://shimajima-eiji.github.io/Hosting2)
 - [Architect](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Architect/)
 - [Cayman](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Cayman/)
 - [Dinky](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Dinky/)
@@ -17,8 +18,6 @@ Hostingリポジトリを汚染しすぎたのでクリーンな環境構築。�
 - [Slate](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Slate/)
 - [Tactile](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Tactile/)
 - [Time machine](https://shimajima-eiji.github.io/Hosting_demo_jekyll_Time-machine/)
-
-このページはjekyllを適用しなかったプレーンなREADME.mdであるため、no-themeとして見るとよい。
 
 # チートシート
 GitHubのREADME.mdでのプレビューの結果と異なる点に注目しよう。
