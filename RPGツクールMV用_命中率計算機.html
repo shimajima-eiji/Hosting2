@@ -1,0 +1,83 @@
+<h1>命中率計算機</h1>
+<table border="1">
+  <tr>
+    <td>
+      <label for="actorHit">スキルを使う人の基本命中率を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="actorHit" max="100" min="0" value="100"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="itemHit">スキル（アイテム）の命中率を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="itemHit" max="100" min="0" value="100"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="actorEva">スキルを受ける人の基本回避率を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="actorEva" max="100" min="0" value="0"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      計算結果
+    </td>
+    <td>
+      <span id="result">100.000</span> %
+    </td>
+  </tr>
+</table>
+
+<h2>使い方</h2>
+<p>
+  数値を変更したら自動的に更新します。
+  <br>このファイルをテキストエディタで開いたら何やってるのか分かるようにコメント入れてるので、気に入らないところは変えて使ってください。
+</p>
+<h2>情報ソース</h2>
+<ul>
+  <li>
+    <a href="https://rpgmakerofficial.com/product/mz/guide/db/nakama.html#meichuu">デフォルトの仕様 (RPGツクールMZ初心者講座)</a>
+  </li>
+  <li>
+    <a href="https://raw.githubusercontent.com/triacontane/RPGMakerMV/mz_master/HitAndEvasionExtend.js">命中制御してるっぽいやつ
+      (Github)</a>
+  </li>
+  <li>
+    <a href="https://github.com/tonbijp/RPGMakerMZ/blob/master/Reference/Game_Action.md#itemhit-target--number">プロパティの意図
+      (Github)</a>
+  </li>
+</ul>
+
+<script>
+  // 出力したい桁数
+  const digits = 2;
+  // HTMLのIDに対応
+  const ids = {
+    actor: "actorHit",
+    item: "itemHit",
+    eva: "actorEva",
+    result: "result",
+  }
+  // JSのラッパー
+  let _getElement = (id) => document.getElementById(id)
+  let _getValue = (id) => _getElement(id).value / 100
+
+  // 計算処理と結果を出力する
+  let calculation = () => {
+    let hit = _getValue(ids.actor)
+    let item = _getValue(ids.item)
+    let eva = _getValue(ids.eva)
+    _getElement(ids.result).innerHTML = (_getValue(ids.actor) * _getValue(ids.item) * (1 - _getValue(ids.eva)) * 100).toFixed(digits);
+  };
+
+  // 数値を変えたら結果を更新させる
+  _getElement(ids.actor).addEventListener("change", calculation);
+  _getElement(ids.item).addEventListener("change", calculation);
+  _getElement(ids.eva).addEventListener("change", calculation);
+</script>
