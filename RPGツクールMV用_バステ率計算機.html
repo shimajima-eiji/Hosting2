@@ -1,0 +1,75 @@
+<table border="1">
+  <tr>
+    <td>
+      <label for="offenseLuk">スキルを使う人（敵）の運を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="offenseLuk" max="999" min="0" value="50"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="itemHit">スキル（アイテム）のバステ付与率を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="itemHit" max="100" min="0" value="50"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="defenceLuk">スキルを受ける人（敵）の運を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="defenceLuk" max="999" min="0" value="50"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="defenceGuard">スキルを受ける人（敵）のバステ耐性率を半角数値で入力: </label>
+    </td>
+    <td>
+      <input type="number" id="defenceGuard" max="999" min="0" value="5"> %
+    </td>
+  </tr>
+  <tr>
+    <td>
+      計算結果
+    </td>
+    <td>
+      <span id="result">0.000</span> %
+    </td>
+  </tr>
+</table>
+
+<script>
+  // 出力したい桁数
+  const digits = 2;
+  // HTMLのIDに対応
+  const ids = {
+    actor: "offenseLuk",
+    item: "itemHit",
+    eva: "defenceLuk",
+    def: "defenceGuard",
+    result: "result",
+  }
+  // JSのラッパー
+  let _getElement = (id) => document.getElementById(id)
+  let _getValue = (id) => _getElement(id).value / 100
+
+  // 計算処理と結果を出力する
+  let calculation = () => {
+    let hit = _getValue(ids.actor)
+    let item = _getValue(ids.item)
+    let eva = _getValue(ids.eva)
+    _getElement(ids.result).innerHTML = ((
+      (1 + (_getValue(ids.actor) - _getValue(ids.eva)) * 0.1)  // キャラクター間のバステ付与率
+      * _getValue(ids.item) - _getValue(ids.def)   // スキルによるバステ付与率と、受け手のバステ無効率
+    ) * 100).toFixed(digits);  // 100分率になおして出力
+  };
+
+  // 数値を変えたら結果を更新させる
+  _getElement(ids.actor).addEventListener("change", calculation);
+  _getElement(ids.item).addEventListener("change", calculation);
+  _getElement(ids.eva).addEventListener("change", calculation);
+  _getElement(ids.def).addEventListener("change", calculation);
+</script>
