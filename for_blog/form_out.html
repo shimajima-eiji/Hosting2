@@ -11,14 +11,15 @@
       <label for='inform'>inform要素への入力：</label><input type='text' id='inform' name='inform'>
     </form>
   </section>
-  
+
   <!-- 以下の二つのは上記のformタグの外にあるが、form属性で関連付けたいformのidを指定することで、任意のformタグと関連付けることができる -->
   <section>
     <h2>form外項目</h2>
     <label for='outform'>outform要素への入力：</label><input type="text" form='form1' id='outform' name='outform'>
+    <br>
     <button form='form1'>GETで送信</button>
   </section>
-  
+
   <section>
     <h2>URL（GET通信）</h2>
     <span id='url'></span>
@@ -26,11 +27,22 @@
 
   <section>
     <h2>コード全文</h2>
+    CodePenに書いたがsubmit辺りが怪しかったのでGHPに移行した。
+    <br>
     <a target='_blank' href='https://github.com/shimajima-eiji/Hosting2/blob/main/for_blog/form_out.html'>GitHub</a>
   </section>
 
   <script>
-    document.getElementById("url").innerText = location.href;
+    // 念の為にURL全文
+    document.getElementById('url').innerText = location.href;
+
+    // 使い回しの抜き出し
+    setInput = (id, word) => document.getElementById(id).value = word;
+
+    // URLのパラメータだけ取得する
+    const urlParams = new URLSearchParams(window.location.search);
+    setInput('inform', urlParams.get('inform'));
+    setInput('outform', urlParams.get('outform'));
   </script>
-  
+
 </body>
