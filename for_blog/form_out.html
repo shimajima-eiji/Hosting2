@@ -8,14 +8,14 @@
   <section>
     <h2>form内項目</h2>
     <form action='' id='form1'>
-      <input type='text' name='inform'>
+      <label for='inform'>inform要素への入力：</label><input type='text' id='inform' name='inform'>
     </form>
   </section>
   
   <!-- 以下の二つのは上記のformタグの外にあるが、form属性で関連付けたいformのidを指定することで、任意のformタグと関連付けることができる -->
   <section>
     <h2>form外項目</h2>
-    <input type="text" form='form1' name='outform'>
+    <label for='outform'>outform要素への入力：</label><input type="text" form='form1' id='outform' name='outform'>
     <button form='form1'>GETで送信</button>
   </section>
   
@@ -23,8 +23,14 @@
     <h2>URL（GET通信）</h2>
     <span id='url'></span>
   </section>
-  
+
+  <section>
+    <h2>コード全文</h2>
+    <a target='_blank' href='https://github.com/shimajima-eiji/Hosting2/blob/main/for_blog/form_out.html'>GitHub</a>
+  </section>
+
   <script>
     document.getElementById("url").innerText = location.href;
   </script>
+  
 </body>
