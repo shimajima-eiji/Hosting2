@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svelte CDN Example on GitHub Pages</title>
+    <script src="https://unpkg.com/svelte@3/dist/svelte.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // データ部分
+        const data = {
+            name: 'world'
+        };
+
+        // テンプレートをフェッチして Svelte アプリを初期化
+        fetch('template.svelte')
+            .then(response => response.text())
+            .then(template => {
+                new Svelte.default({
+                    target: document.getElementById('app'),
+                    props: data,
+                    template: template
+                });
+            })
+            .catch(error => console.error('テンプレートの読み込みに失敗しました:', error));
+    </script>
+</body>
+</html>
