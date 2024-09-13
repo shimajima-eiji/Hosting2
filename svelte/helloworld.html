@@ -17,16 +17,22 @@
     </script>
 
     <script>
-        const data = {
-            name: 'world'
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                name: 'world'
+            };
 
-        const template = document.getElementById('template').innerHTML;
+            const template = document.getElementById('template').innerHTML;
 
-        new Svelte.default({
-            target: document.getElementById('app'),
-            props: data,
-            template: template
+            if (typeof Svelte !== 'undefined') {
+                new Svelte({
+                    target: document.getElementById('app'),
+                    props: data,
+                    template: template
+                });
+            } else {
+                console.error('Svelteが読み込まれていません。');
+            }
         });
     </script>
 </body>
