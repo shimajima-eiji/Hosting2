@@ -7,19 +7,26 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-    <h1>htmx Example</h1>
+    <h1>htmx Example(json)</h1>
     <button hx-get="demo.json" hx-target="#preview" hx-trigger="click">
-        挨拶を取得
+        jsonからメッセージを取得
     </button>
-    <div id="greeting"></div>
+    <div id="json_preview"></div>
 
     <script>
         document.body.addEventListener('htmx:afterOnLoad', function(event) {
-            if (event.detail.elt.id === 'preview') {
+            if (event.detail.elt.id === 'json_preview') {
                 var response = JSON.parse(event.detail.xhr.responseText);
                 event.detail.elt.innerText = response.message;
             }
         });
     </script>
+
+    <h1>htmx Example(html)</h1>
+    <button hx-get="demo.html" hx-target="#html_preview" hx-trigger="click">
+        外部htmlを取得
+    </button>
+    <div id="html_preview"></div>
+
 </body>
 </html>
