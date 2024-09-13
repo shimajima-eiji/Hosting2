@@ -16,7 +16,7 @@
         };
 
         // テンプレートをフェッチして Svelte アプリを初期化
-        fetch('template.svelte')
+        fetch('/svelte/template.svelte')
             .then(response => response.text())
             .then(template => {
                 new Svelte.default({
