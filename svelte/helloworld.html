@@ -9,23 +9,25 @@
 <body>
     <div id="app"></div>
 
+    <script id="template" type="text/svelte">
+        <main>
+            <h1>Hello {name}!</h1>
+            <input bind:value={name}>
+        </main>
+    </script>
+
     <script>
-        // データ部分
         const data = {
             name: 'world'
         };
 
-        // テンプレートをフェッチして Svelte アプリを初期化
-        fetch('https://shimajima-eiji.github.io/Hosting2/svelte/template.svelte')  // GHPの問題だと思うが参照できないらしいのでフルパス
-            .then(response => response.text())
-            .then(template => {
-                new Svelte.default({
-                    target: document.getElementById('app'),
-                    props: data,
-                    template: template
-                });
-            })
-            .catch(error => console.error('テンプレートの読み込みに失敗しました:', error));
+        const template = document.getElementById('template').innerHTML;
+
+        new Svelte.default({
+            target: document.getElementById('app'),
+            props: data,
+            template: template
+        });
     </script>
 </body>
 </html>
