@@ -1,40 +1,118 @@
+/* ベースレイアウト */
 body {
     margin: 0;
     padding: 10px;
-    min-width: 300px;
-    min-height: 400px;
+    width: 300px;
+    height: 400px;
     position: relative;
     font-family: Arial, sans-serif;
     transition: font-size 0.2s ease;
 }
 
+#app-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* コントロールエリア */
+#controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+#font-decrease, #font-increase {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#font-decrease:hover, #font-increase:hover {
+    background-color: #e0e0e0;
+}
+
+#font-size-display {
+    min-width: 50px;
+    text-align: center;
+}
+
+/* チャットコンテナ */
 #chat-container {
-    height: calc(100% - 100px);
-    min-height: 200px;
+    flex: 1;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
     margin: 10px 0;
+    background: #fff;
 }
 
+/* メッセージ関連 */
 .message {
     margin-bottom: 10px;
+    padding: 8px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    word-break: break-word;
 }
 
 .message .actions {
-    font-size: 0.8em;
-    color: #888;
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
 }
 
+.message .actions button {
+    padding: 4px 8px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.message .actions button:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* 入力エリア */
 #input-container {
     margin-top: 10px;
+    display: flex;
+    gap: 8px;
 }
 
 #message-input {
-    width: 70%;
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-/* QRコード用のスタイル */
+#send-button {
+    padding: 6px 12px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background: #45a049;
+}
+
+/* QRコード関連 */
 .qr-codes {
     margin: 10px 0;
 }
@@ -62,40 +140,7 @@ body {
     margin: 0 auto;
 }
 
-#controls {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#font-decrease, #font-increase {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#font-decrease:hover, #font-increase:hover {
-    background-color: #e0e0e0;
-}
-
-#font-size-display {
-    min-width: 50px;
-    text-align: center;
-}
-
-#app-container {
-    height: calc(100vh - 20px);
-}
-
+/* リサイズハンドル */
 #resize-handle {
     position: absolute;
     right: 0;
@@ -104,4 +149,42 @@ body {
     height: 15px;
     cursor: se-resize;
     background: linear-gradient(135deg, transparent 50%, #ccc 50%);
-} 
+}
+
+/* 既存のスタイルに追加 */
+.message.dimmed {
+    opacity: 0.5;
+}
+
+.message-input.editing {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+}
+
+.delete-btn {
+    background-color: #ff5252;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.delete-btn.delete-confirm {
+    background-color: #d50000;
+    font-weight: bold;
+}
+
+.edit-btn {
+    background-color: #2196f3;
+    color: white;
+}
+
+.actions button {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 4px;
+}
+
+.actions button:hover {
+    opacity: 0.9;
+}
