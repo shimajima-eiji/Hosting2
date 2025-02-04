@@ -1,25 +1,12 @@
 {
     "manifest_version": 3,
-    "name": "メモアプリ",
-    "version": "2.0",
-    "description": "Zoomやライブ配信用のメモアプリ",
+    "name": "会議メモアーカイブ",
+    "version": "2.1",
+    "description": "Zoom・Meet等のチャットメッセージを効率的に記録・管理するツール",
     "permissions": [
         "storage"
     ],
-    "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self'"
-    },
     "action": {
         "default_popup": "index.html"
-    },
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "styles.css"
-            ],
-            "matches": [
-                "<all_urls>"
-            ]
-        }
-    ]
+    }
 }
