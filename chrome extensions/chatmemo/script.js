@@ -66,6 +66,7 @@ class ChatApp {
         const target = e.target;
         if (!target.classList.contains('edit') && !target.classList.contains('delete')) return;
 
+        e.stopPropagation(); // イベントの伝播を停止
         const id = target.getAttribute('data-id');
         if (target.classList.contains('edit')) {
             this.editMessage(id);
@@ -306,11 +307,19 @@ class FontSizeController {
     resize(e) {
         if (!this.#isResizing) return;
 
+        e.preventDefault(); // デフォルトの動作を防止
         const dx = e.clientX - this.#currentX;
         const dy = e.clientY - this.#currentY;
 
-        this.#elements.body.style.width = `${this.#initialWidth + dx}px`;
-        this.#elements.body.style.height = `${this.#initialHeight + dy}px`;
+        // 最小サイズを設定
+        const minWidth = 300;
+        const minHeight = 400;
+
+        const newWidth = Math.max(minWidth, this.#initialWidth + dx);
+        const newHeight = Math.max(minHeight, this.#initialHeight + dy);
+
+        this.#elements.body.style.width = `${newWidth}px`;
+        this.#elements.body.style.height = `${newHeight}px`;
     }
 
     /**
@@ -323,6 +332,174 @@ class FontSizeController {
 
 // アプリケーションの初期化
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM要素の取得
+    const chatContainer = document.getElementById('chat-container');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    // メッセージ配列と編集状態の初期化
+    let messages = [];
+    let editingIndex = null;
+
+    // 保存されたメッセージの読み込み
+    chrome.storage.local.get(['messages'], (result) => {
+        if (result.messages) {
+            messages = result.messages;
+            renderMessages();
+        }
+    });
+
+    // メッセージの保存
+    function saveMessages() {
+        chrome.storage.local.set({ messages: messages }, () => {
+            console.log('Messages saved:', messages);
+        });
+    }
+
+    // URLの抽出
+    function extractUrls(text) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.match(urlRegex) || [];
+    }
+
+    // QRコード要素の作成
+    function createQRCodeElements(urls) {
+        if (urls.length === 0) return '';
+
+        return `
+            <div class="qr-codes">
+                ${urls.map(url => `
+                    <div class="qr-wrapper">
+                        <div class="url-text">${url}</div>
+                        <div class="qr-code" data-url="${url}"></div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // QRコードの描画
+    function renderQRCodes() {
+        const qrElements = document.querySelectorAll('.qr-code');
+        qrElements.forEach(element => {
+            // 既に描画済みの場合はスキップ
+            if (element.children.length > 0) return;
+
+            new QRCode(element, {
+                text: element.dataset.url,
+                width: 128,
+                height: 128
+            });
+        });
+    }
+
+    // メッセージの表示
+    function renderMessages() {
+        console.log('Rendering messages:', messages);
+        chatContainer.innerHTML = messages.map((msg, index) => {
+            const urls = extractUrls(msg.text);
+            return `
+                <div class="message">
+                    <div class="message-content">${msg.text}</div>
+                    ${createQRCodeElements(urls)}
+                    <div class="actions">
+                        <button class="edit-btn" data-index="${index}">編集</button>
+                        <button class="delete-btn" data-index="${index}">削除</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // メッセージ描画後にQRコードを生成
+        renderQRCodes();
+    }
+
+    // メッセージの送信/更新処理
+    function handleSubmit() {
+        const text = messageInput.value.trim();
+        console.log('Submitting text:', text);
+
+        if (text) {
+            if (editingIndex !== null) {
+                // 編集モード
+                messages[editingIndex].text = text;
+                editingIndex = null;
+                sendButton.textContent = '送信';
+            } else {
+                // 新規送信
+                messages.push({
+                    text: text,
+                    timestamp: Date.now()
+                });
+            }
+            messageInput.value = '';
+            saveMessages();
+            renderMessages();
+        }
+    }
+
+    // 送信ボタンのクリックイベント
+    sendButton.addEventListener('click', () => {
+        console.log('Send button clicked');
+        handleSubmit();
+    });
+
+    // Enterキーでの送信
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            console.log('Enter key pressed');
+            handleSubmit();
+        }
+    });
+
+    // 編集・削除ボタンのイベント処理
+    chatContainer.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!target.dataset.index) return;
+
+        const index = parseInt(target.dataset.index);
+
+        if (target.classList.contains('edit-btn')) {
+            // 編集モード開始
+            console.log('Edit button clicked for index:', index);
+            editingIndex = index;
+            messageInput.value = messages[index].text;
+            messageInput.focus();
+            sendButton.textContent = '更新';
+        }
+        else if (target.classList.contains('delete-btn')) {
+            if (target.classList.contains('delete-confirm')) {
+                // 削除実行
+                console.log('Deleting message at index:', index);
+                messages.splice(index, 1);
+                saveMessages();
+                renderMessages();
+            } else {
+                // 削除確認状態
+                console.log('Delete confirmation for index:', index);
+                target.classList.add('delete-confirm');
+                target.textContent = '削除を確定';
+
+                setTimeout(() => {
+                    if (target.classList.contains('delete-confirm')) {
+                        target.classList.remove('delete-confirm');
+                        target.textContent = '削除';
+                    }
+                }, 5000);
+            }
+        }
+    });
+
+    // ESCキーでの編集キャンセル
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && editingIndex !== null) {
+            console.log('Edit cancelled');
+            editingIndex = null;
+            messageInput.value = '';
+            sendButton.textContent = '送信';
+        }
+    });
+
     new ChatApp();
     new FontSizeController();
 });
