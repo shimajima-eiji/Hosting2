@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    padding: 10px;
+    min-width: 300px;
+    min-height: 400px;
+    position: relative;
+    font-family: Arial, sans-serif;
+    transition: font-size 0.2s ease;
+}
+
+#chat-container {
+    height: calc(100% - 100px);
+    min-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message .actions {
+    font-size: 0.8em;
+    color: #888;
+}
+
+#input-container {
+    margin-top: 10px;
+}
+
+#message-input {
+    width: 70%;
+}
+
+/* QRコード用のスタイル */
+.qr-codes {
+    margin: 10px 0;
+}
+
+.qr-wrapper {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.url-text {
+    margin-bottom: 5px;
+    word-break: break-all;
+    font-size: 0.9em;
+    color: #0066cc;
+}
+
+.qr-code {
+    display: inline-block;
+}
+
+.qr-code img {
+    display: block;
+    margin: 0 auto;
+}
+
+#controls {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#font-decrease, #font-increase {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#font-decrease:hover, #font-increase:hover {
+    background-color: #e0e0e0;
+}
+
+#font-size-display {
+    min-width: 50px;
+    text-align: center;
+}
+
+#app-container {
+    height: calc(100vh - 20px);
+}
+
+#resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 15px;
+    height: 15px;
+    cursor: se-resize;
+    background: linear-gradient(135deg, transparent 50%, #ccc 50%);
+} 
