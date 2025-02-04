@@ -1,4 +1,6 @@
 # チャット形式メモアプリ
+![image](https://github.com/user-attachments/assets/2ebab184-3d25-45e0-bfd2-64dd697785b7)
+
 > [!NOTE]
 > 【ユースケース】  
 > ZoomやMeetをアーカイブ配信できないため、「チャットに送りました」を振り返る事ができない  
