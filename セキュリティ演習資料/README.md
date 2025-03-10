@@ -2,6 +2,9 @@
 ITパスポートや基本情報者試験用のセキュリティ分野における攻撃手法イメージをHTML/CSS/JavaScriptのみ、単一ページで構築したもの
 実演時はローカルに持って行っての確認を推奨
 
+- [GitHub Pages](https://shimajima-eiji.github.io/Hosting2/%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E6%BC%94%E7%BF%92%E8%B3%87%E6%96%99)
+- [リポジトリ（ソースコード）](https://github.com/shimajima-eiji/Hosting2/edit/main/%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E6%BC%94%E7%BF%92%E8%B3%87%E6%96%99)
+
 ## 一覧
 以下のコードはAI生成しているが、監修は人間（私）が行なっており、安全性を確認している。
 
