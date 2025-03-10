@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSRFデモ</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .demo-area { border: 1px solid #ccc; padding: 15px; margin: 20px 0; background: #f9f9f9; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        input { padding: 8px; width: 200px; }
+        .bank-balance { font-size: 24px; margin: 20px 0; }
+        .transfer-history { margin-top: 20px; }
+        .attacker-site { background: #ffdddd; border: 1px solid #ffaaaa; padding: 15px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>CSRF（クロスサイトリクエストフォージェリ）デモ</h1>
+    
+    <div class="demo-area">
+        <h2>安全ではない銀行サイト</h2>
+        <p>現在ログイン中です: <strong>山田太郎</strong></p>
+        
+        <div class="bank-balance">口座残高: <span id="balance">100,000</span>円</div>
+        
+        <div>
+            <h3>送金フォーム</h3>
+            <input type="text" id="recipientInput" placeholder="送金先">
+            <input type="number" id="amountInput" placeholder="金額">
+            <button onclick="transferMoney()">送金する</button>
+        </div>
+        
+        <div class="transfer-history">
+            <h3>送金履歴:</h3>
+            <ul id="history"></ul>
+        </div>
+    </div>
+    
+    <div class="attacker-site">
+        <h2>悪意のあるサイト</h2>
+        <p>このサイトには魅力的なコンテンツがあります。ユーザーがログインしている間に...</p>
+        <button onclick="launchCSRF()">見えない送金ボタン（CSRFデモ）</button>
+        
+        <div id="hidden-form" style="display:none">
+            <!-- 隠しフォームは自動的に送信される -->
+        </div>
+    </div>
+
+    <script>
+        let bankBalance = 100000;
+        
+        function updateBalance() {
+            document.getElementById('balance').textContent = bankBalance.toLocaleString();
+        }
+        
+        function transferMoney() {
+            const recipient = document.getElementById('recipientInput').value || '不明';
+            const amount = parseInt(document.getElementById('amountInput').value) || 0;
+            
+            if (amount > 0 && amount <= bankBalance) {
+                bankBalance -= amount;
+                updateBalance();
+                
+                addToHistory(`${recipient}さんに${amount.toLocaleString()}円を送金しました`);
+                
+                document.getElementById('recipientInput').value = '';
+                document.getElementById('amountInput').value = '';
+            }
+        }
+        
+        function addToHistory(text) {
+            const item = document.createElement('li');
+            item.textContent = text;
+            document.getElementById('history').prepend(item);
+        }
+        
+        function launchCSRF() {
+            // CSRFの実演: ユーザーが知らないうちに送金が実行される
+            const hiddenDiv = document.getElementById('hidden-form');
+            hiddenDiv.innerHTML = `
+                <p>攻撃者が仕込んだ見えないフォームが自動的に送金アクションを実行します</p>
+            `;
+            
+            // 実際の攻撃では自動的に実行されますが、デモでは明示的に表示
+            setTimeout(() => {
+                bankBalance -= 10000;
+                updateBalance();
+                addToHistory('攻撃者に10,000円が送金されました（CSRF攻撃）');
+                
+                alert('CSRF攻撃が成功しました！あなたの口座から10,000円が知らないうちに送金されています。');
+            }, 500);
+        }
+    </script>
+</body>
+</html>

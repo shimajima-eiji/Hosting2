@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>セッションハイジャックデモ</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .demo-area { border: 1px solid #ccc; padding: 15px; margin: 20px 0; background: #f9f9f9; }
+        .user-site { border: 1px solid #9dc3ff; background: #e6f0ff; padding: 15px; margin-bottom: 20px; }
+        .attacker-site { border: 1px solid #ffaaaa; background: #ffdddd; padding: 15px; }
+        input { padding: 8px; width: 200px; margin-right: 5px; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .log { margin-top: 15px; padding: 10px; background: #efefef; min-height: 100px; font-family: monospace; overflow-y: auto; }
+        .section { margin-bottom: 30px; }
+        .cookies-display { background: #333; color: #0f0; padding: 10px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>セッションハイジャックデモ</h1>
+    
+    <div class="section">
+        <h2>セッションについて</h2>
+        <p>Webアプリケーションは「セッション」を使って、ユーザーがログインしているかどうかを追跡します。セッションIDは通常、クッキーとして保存されます。</p>
+        <p>セッションハイジャックとは、攻撃者がユーザーのセッションIDを盗み、そのユーザーになりすましてWebサイトにアクセスする攻撃です。</p>
+    </div>
+    
+    <div class="demo-area user-site">
+        <h2>正規のWebサイト</h2>
+        <div id="login-section">
+            <h3>ログイン</h3>
+            <input type="text" id="username" placeholder="ユーザー名" value="山田太郎">
+            <input type="password" id="password" placeholder="パスワード" value="password123">
+            <button onclick="login()">ログイン</button>
+        </div>
+        
+        <div id="user-panel" style="display:none;">
+            <h3>ユーザーパネル</h3>
+            <p>ようこそ、<span id="user-name">ゲスト</span>さん！</p>
+            <p>アカウント残高: <span id="account-balance">100,000</span>円</p>
+            <button onclick="performAction()">アカウント操作</button>
+            <button onclick="logout()">ログアウト</button>
+        </div>
+        
+        <div class="cookies-display" id="cookies-display">
+            セッションクッキー: なし
+        </div>
+    </div>
+    
+    <div class="demo-area attacker-site">
+        <h2>攻撃者のサイト</h2>
+        <p>あなたは別のタブで悪意のあるサイトを開いてしまいました。</p>
+        <p>攻撃者は何らかの方法でセッションIDを盗もうとしています...</p>
+        
+        <button onclick="stealSession()">セッションを盗む</button>
+        <div id="stolen-session" style="display:none;">
+            <p>盗まれたセッションID: <span id="stolen-session-id">なし</span></p>
+            <button onclick="useSession()">盗んだセッションIDを使う</button>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>操作ログ</h2>
+        <div class="log" id="action-log"></div>
+    </div>
+    
+    <script>
+        let isLoggedIn = false;
+        let sessionId = null;
+        let username = "";
+        
+        function generateSessionId() {
+            // 実際のセッションIDはもっと複雑ですが、デモ用にシンプルなIDを生成
+            return 'sess_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        function login() {
+            username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                sessionId = generateSessionId();
+                isLoggedIn = true;
+                
+                // クッキーの表示を更新
+                document.getElementById('cookies-display').textContent = `セッションクッキー: ${sessionId}`;
+                
+                // UIを更新
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('user-panel').style.display = 'block';
+                document.getElementById('user-name').textContent = username;
+                
+                addLog(`[正規サイト] ${username}さんがログインしました。セッションID: ${sessionId}`);
+            }
+        }
+        
+        function logout() {
+            isLoggedIn = false;
+            sessionId = null;
+            
+            // クッキーの表示を更新
+            document.getElementById('cookies-display').textContent = 'セッションクッキー: なし';
+            
+            // UIを更新
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('user-panel').style.display = 'none';
+            
+            addLog('[正規サイト] ログアウトしました。');
+        }
+        
+        function performAction() {
+            if (isLoggedIn) {
+                addLog(`[正規サイト] ${username}さんがアカウント操作を行いました。`);
+            }
+        }
+        
+        function stealSession() {
+            if (sessionId) {
+                document.getElementById('stolen-session').style.display = 'block';
+                document.getElementById('stolen-session-id').textContent = sessionId;
+                
+                addLog(`[攻撃者] セッションID(${sessionId})が盗まれました！`);
+            } else {
+                alert('盗むセッションがありません。先にログインしてください。');
+            }
+        }
+        
+        function useSession() {
+            const stolenId = document.getElementById('stolen-session-id').textContent;
+            
+            if (stolenId !== 'なし' && stolenId === sessionId) {
+                addLog(`[攻撃者] 盗んだセッションID(${stolenId})を使って${username}さんになりすましています！`);
+                addLog(`[攻撃者] ${username}さんのアカウントに不正アクセスしました。`);
+                addLog(`[攻撃者] 個人情報やアカウント残高が見えるようになりました。`);
+                
+                // 攻撃者ができることをデモ
+                setTimeout(() => {
+                    const newBalance = parseInt(document.getElementById('account-balance').textContent) - 50000;
+                    document.getElementById('account-balance').textContent = newBalance;
+                    addLog(`[攻撃者] ${username}さんのアカウントから50,000円を引き出しました！`);
+                }, 1500);
+            }
+        }
+        
+        function addLog(message) {
+            const log = document.getElementById('action-log');
+            const entry = document.createElement('div');
+            entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+    </script>
+</body>
+</html>

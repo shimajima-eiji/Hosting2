@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>XSSデモ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .demo-area {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin: 20px 0;
+        background: #f9f9f9;
+      }
+      input {
+        padding: 8px;
+        width: 300px;
+      }
+      button {
+        padding: 8px 15px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .output {
+        margin-top: 15px;
+        padding: 10px;
+        background: #efefef;
+        min-height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>XSS（クロスサイトスクリプティング）デモ</h1>
+
+    <div class="demo-area">
+      <h2>安全ではないコメント表示システム</h2>
+      <p>以下に名前とコメントを入力してください：</p>
+
+      <div>
+        <input type="text" id="nameInput" placeholder="名前" />
+        <input type="text" id="commentInput" placeholder="コメント" />
+        <button onclick="addComment()">コメント投稿</button>
+      </div>
+
+      <h3>コメント一覧：</h3>
+      <div id="comments"></div>
+    </div>
+
+    <div>
+      <h3>試してみるスクリプト例：</h3>
+      <code>&lt;script&gt;alert('XSS攻撃が成功しました！')&lt;/script&gt;</code
+      ><br />
+      <code>&lt;img src="x" onerror="alert('画像を装った攻撃')"&gt;</code>
+    </div>
+
+    <script>
+      function addComment() {
+        const name = document.getElementById("nameInput").value;
+        const comment = document.getElementById("commentInput").value;
+
+        // 危険！ユーザー入力を直接HTMLに挿入（XSSの原因）
+        const commentDiv = document.createElement("div");
+        commentDiv.innerHTML = `<strong>${name}</strong>: ${comment}`;
+
+        document.getElementById("comments").appendChild(commentDiv);
+
+        // 入力欄をクリア
+        document.getElementById("nameInput").value = "";
+        document.getElementById("commentInput").value = "";
+      }
+    </script>
+  </body>
+</html>

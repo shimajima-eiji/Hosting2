@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ドライブバイダウンロードデモ</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .demo-area { border: 1px solid #ccc; padding: 15px; margin: 20px 0; background: #f9f9f9; }
+        .fake-site { border: 1px solid #aaa; padding: 15px; margin: 20px 0; background: #fff; }
+        .popup { position: fixed; display: none; width: 400px; background: #fff; border: 2px solid #333; 
+                box-shadow: 0 0 15px rgba(0,0,0,0.5); padding: 20px; z-index: 100; 
+                top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .popup-close { position: absolute; right: 10px; top: 10px; cursor: pointer; font-weight: bold; }
+        .overlay { position: fixed; display: none; width: 100%; height: 100%; top: 0; left: 0; 
+                  background: rgba(0,0,0,0.5); z-index: 99; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; margin: 5px; }
+        .download-button { background: #2196F3; }
+        .fake-download-button { background: #f44336; }
+        .warning-button { background: #ff9800; }
+        .ad-banner { background: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin: 10px 0; cursor: pointer; }
+        .log { margin-top: 15px; padding: 10px; background: #efefef; min-height: 100px; font-family: monospace; overflow-y: auto; }
+        .file-icon { font-size: 48px; margin: 10px; }
+        .progress-bar { width: 100%; height: 20px; background: #eee; margin: 10px 0; }
+        .progress { width: 0%; height: 100%; background: #4CAF50; transition: width 0.5s; }
+    </style>
+</head>
+<body>
+    <h1>ドライブバイダウンロードデモ</h1>
+    
+    <div class="demo-area">
+        <h2>ドライブバイダウンロードとは？</h2>
+        <p>ドライブバイダウンロードとは、ユーザーが知らないうちに、または誤解を招くような方法で、悪意のあるソフトウェアが自動的にダウンロードされる攻撃手法です。</p>
+        <p>ユーザーはウェブサイトを閲覧しているだけで、バックグラウンドでマルウェアがダウンロードされたり、偽のアップデート通知や警告によって騙されてマルウェアをインストールしてしまったりします。</p>
+        
+        <h3>デモサイト</h3>
+        <p>以下は悪意のあるウェブサイトに訪れた際の動作をシミュレーションします。</p>
+        
+        <div class="fake-site">
+            <h2>無料映画ストリーミングサイト</h2>
+            <p>最新の映画を無料で視聴できます！</p>
+            
+            <div class="ad-banner" onclick="showFakePopup()">
+                <h3>人気映画ランキング</h3>
+                <p>今週のトップ10をチェック！【クリックして表示】</p>
+            </div>
+            
+            <button class="download-button" onclick="simulateAutoDownload()">おすすめ映画リストを表示</button>
+            
+            <div style="margin-top: 20px;">
+                <p>※このサイトはデモであり、実際にファイルがダウンロードされることはありません。</p>
+            </div>
+        </div>
+        
+        <div class="action-area">
+            <button onclick="resetDemo()">デモをリセット</button>
+        </div>
+        
+        <h3>実行ログ</h3>
+        <div class="log" id="action-log"></div>
+    </div>
+    
+    <!-- 偽のポップアップ -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="fake-popup">
+        <span class="popup-close" onclick="closeFakePopup()">×</span>
+        <h3>⚠️ セキュリティ警告</h3>
+        <p>お使いのコンピュータに<strong>54個のウイルスが検出</strong>されました！</p>
+        <p>すぐにウイルス対策ソフトウェアをインストールしてください。</p>
+        <div style="text-align: center;">
+            <button class="fake-download-button" onclick="simulateMalwareDownload()">今すぐ修復</button>
+        </div>
+    </div>
+    
+    <!-- 偽のダウンロードポップアップ -->
+    <div class="popup" id="download-popup">
+        <span class="popup-close" onclick="closeDownloadPopup()">×</span>
+        <h3>ダウンロード中...</h3>
+        <div class="file-icon">📁</div>
+        <p id="download-filename">movie_list.exe</p>
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        <p id="download-status">準備中...</p>
+    </div>
+    
+    <script>
+        function showFakePopup() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('fake-popup').style.display = 'block';
+            addLog('ユーザーが広告バナーをクリックしました。偽のセキュリティ警告ポップアップが表示されました。');
+        }
+        
+        function closeFakePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('fake-popup').style.display = 'none';
+            addLog('ユーザーが偽のセキュリティ警告を閉じました。');
+        }
+        
+        function simulateMalwareDownload() {
+            closeFakePopup();
+            showDownloadPopup('security_scanner_setup.exe');
+            addLog('ユーザーが偽のセキュリティ警告の「今すぐ修復」ボタンをクリックしました。マルウェアのダウンロードが開始されました。');
+        }
+        
+        function simulateAutoDownload() {
+            showDownloadPopup('movie_list.exe');
+            addLog('ユーザーが「おすすめ映画リストを表示」ボタンをクリックしました。バックグラウンドで悪意のあるファイルのダウンロードが開始されました。');
+        }
+        
+        function showDownloadPopup(filename) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('download-popup').style.display = 'block';
+            document.getElementById('download-filename').textContent = filename;
+            document.getElementById('download-status').textContent = 'ダウンロード中...';
+            
+            // プログレスバーのアニメーション
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('download-status').textContent = 'ダウンロード完了';
+                    addLog(`ファイル "${filename}" のダウンロードが完了しました。実際のマルウェアなら、この時点でユーザーのコンピュータが感染していた可能性があります。`);
+                    
+                    setTimeout(() => {
+                        if (filename.includes('security')) {
+                            addLog('偽のセキュリティソフトウェアがインストールされました。ユーザーの個人情報が盗まれる可能性があります。');
+                        } else {
+                            addLog('バックグラウンドでマルウェアが実行されました。ユーザーは気づかないうちにコンピュータが感染しています。');
+                        }
+                    }, 1000);
+                }
+            }, 100);
+        }
+        
+        function closeDownloadPopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('download-popup').style.display = 'none';
+        }
+        
+        function resetDemo() {
+            closeDownloadPopup();
+            closeFakePopup();
+            document.getElementById('action-log').innerHTML = '';
+            addLog('デモがリセットされました。');
+        }
+        
+        function addLog(message) {
+            const log = document.getElementById('action-log');
+            const entry = document.createElement('div');
+            entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // 初期ログ
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('悪意のあるウェブサイトにアクセスしました。実際のサイトではこの時点でバックグラウンドで脆弱性をスキャンしている可能性があります。');
+        });
+    </script>
+</body>
+</html>

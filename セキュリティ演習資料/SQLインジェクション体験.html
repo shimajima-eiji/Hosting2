@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SQLインジェクション概念デモ</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .demo-area { border: 1px solid #ccc; padding: 15px; margin: 20px 0; background: #f9f9f9; }
+        .login-form { background: #fff; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px; }
+        .database { background: #f0f0f0; padding: 15px; border: 1px solid #ddd; margin-top: 20px; }
+        .database-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .database-table th, .database-table td { border: 1px solid #bbb; padding: 8px; text-align: left; }
+        .database-table th { background: #e0e0e0; }
+        .database-table tr:nth-child(even) { background: #f8f8f8; }
+        input { padding: 8px; width: 250px; margin: 5px 0; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; margin: 5px 0; }
+        .query-display { font-family: monospace; padding: 10px; background: #333; color: #0f0; margin: 10px 0; white-space: pre-wrap; }
+        .result-area { margin-top: 15px; border: 1px solid #ddd; padding: 10px; background: #fff; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .hidden { display: none; }
+        .log { margin-top: 15px; padding: 10px; background: #efefef; min-height: 100px; font-family: monospace; overflow-y: auto; }
+        .tabs { display: flex; margin-bottom: -1px; }
+        .tab { padding: 8px 15px; border: 1px solid #ddd; background: #f1f1f1; cursor: pointer; margin-right: 5px; }
+        .tab.active { background: #fff; border-bottom: 1px solid #fff; }
+        .tab-content { border: 1px solid #ddd; padding: 15px; background: #fff; }
+        .hint { background: #FFFACD; border: 1px solid #FFE4B5; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>SQLインジェクション概念デモ</h1>
+    
+    <div class="demo-area">
+        <h2>SQLインジェクションとは？</h2>
+        <p>SQLインジェクションは、Webアプリケーションの入力フィールドを通じて悪意のあるSQLコードを「注入」し、データベースに不正にアクセスする攻撃手法です。</p>
+        <p>このデモでは、安全な方法でSQLインジェクション攻撃の概念を示します。実際の攻撃手法は表示せず、概念的な理解に焦点を当てています。</p>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('normal-login')">通常のログイン</div>
+            <div class="tab" onclick="switchTab('vulnerable-login')">脆弱なログイン</div>
+            <div class="tab" onclick="switchTab('secure-login')">安全なログイン</div>
+        </div>
+        
+        <div id="normal-login" class="tab-content">
+            <h3>通常のログイン</h3>
+            <div class="login-form">
+                <h4>ログイン</h4>
+                <div>
+                    <label for="normal-username">ユーザー名:</label>
+                    <input type="text" id="normal-username" placeholder="ユーザー名を入力">
+                </div>
+                <div>
+                    <label for="normal-password">パスワード:</label>
+                    <input type="text" id="normal-password" placeholder="パスワードを入力">
+                </div>
+                <button onclick="normalLogin()">ログイン</button>
+            </div>
+            
+            <div class="result-area" id="normal-result">
+                <!-- 結果がここに表示されます -->
+            </div>
+            
+            <div class="hint">
+                <p>ヒント: 正しいログイン情報は「admin」/「password123」または「user」/「user123」です。</p>
+            </div>
+        </div>
+        
+        <div id="vulnerable-login" class="tab-content hidden">
+            <h3>脆弱なログイン (SQLインジェクションに対して脆弱)</h3>
+            <div class="login-form">
+                <h4>ログイン</h4>
+                <div>
+                    <label for="vulnerable-username">ユーザー名:</label>
+                    <input type="text" id="vulnerable-username" placeholder="ユーザー名を入力">
+                </div>
+                <div>
+                    <label for="vulnerable-password">パスワード:</label>
+                    <input type="text" id="vulnerable-password" placeholder="パスワードを入力">
+                </div>
+                <button onclick="vulnerableLogin()">ログイン</button>
+            </div>
+            
+            <div class="query-display" id="vulnerable-query">
+                <!-- 生成されたSQLクエリがここに表示されます -->
+            </div>
+            
+            <div class="result-area" id="vulnerable-result">
+                <!-- 結果がここに表示されます -->
+            </div>
+            
+            <div class="hint">
+                <p>ヒント: このフォームはSQLインジェクションに対して脆弱です。特殊な入力で認証をバイパスできる可能性があります。</p>
+                <p>※実際の攻撃方法は表示しませんが、入力値がSQLクエリに直接結合されることに注目してください。</p>
+            </div>
+        </div>
+        
+        <div id="secure-login" class="tab-content hidden">
+            <h3>安全なログイン (SQLインジェクションに対して保護)</h3>
+            <div class="login-form">
+                <h4>ログイン</h4>
+                <div>
+                    <label for="secure-username">ユーザー名:</label>
+                    <input type="text" id="secure-username" placeholder="ユーザー名を入力">
+                </div>
+                <div>
+                    <label for="secure-password">パスワード:</label>
+                    <input type="text" id="secure-password" placeholder="パスワードを入力">
+                </div>
+                <button onclick="secureLogin()">ログイン</button>
+            </div>
+            
+            <div class="query-display" id="secure-query">
+                <!-- 生成されたSQLクエリがここに表示されます -->
+            </div>
+            
+            <div class="result-area" id="secure-result">
+                <!-- 結果がここに表示されます -->
+            </div>
+            
+            <div class="hint">
+                <p>ヒント: このフォームはSQLインジェクションに対して保護されています。入力値はプレースホルダーとして扱われ、SQLクエリから分離されています。</p>
+            </div>
+        </div>
+        
+        <h3>シミュレートされたデータベース</h3>
+        <div class="database">
+            <h4>ユーザーテーブル</h4>
+            <table class="database-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ユーザー名</th>
+                        <th>パスワード (ハッシュ化されるべき)</th>
+                        <th>ロール</th>
+                        <th>メールアドレス</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>admin</td>
+                        <td>password123</td>
+                        <td>管理者</td>
+                        <td>admin@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>user</td>
+                        <td>user123</td>
+                        <td>一般ユーザー</td>
+                        <td>user@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>john</td>
+                        <td>secret456</td>
+                        <td>一般ユーザー</td>
+                        <td>john@example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3>実行ログ</h3>
+        <div class="log" id="action-log"></div>
+    </div>
+    
+    <script>
+        // シミュレートされたデータベース
+        const users = [
+            { id: 1, username: 'admin', password: 'password123', role: '管理者', email: 'admin@example.com' },
+            { id: 2, username: 'user', password: 'user123', role: '一般ユーザー', email: 'user@example.com' },
+            { id: 3, username: 'john', password: 'secret456', role: '一般ユーザー', email: 'john@example.com' }
+        ];
+        
+        function switchTab(tabId) {
+            // すべてのタブコンテンツを非表示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // すべてのタブからアクティブクラスを削除
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 選択されたタブコンテンツを表示
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // 選択されたタブをアクティブに
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
+        
+        function normalLogin() {
+            const username = document.getElementById('normal-username').value;
+            const password = document.getElementById('normal-password').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            const resultDiv = document.getElementById('normal-result');
+            if (user) {
+                resultDiv.innerHTML = `<div class="success">ログイン成功！ようこそ、${user.username}さん（${user.role}）</div>`;
+                addLog(`通常のログイン: ${username}として正常にログインしました。`);
+            } else {
+                resultDiv.innerHTML = `<div class="error">ログイン失敗：ユーザー名またはパスワードが正しくありません。</div>`;
+                addLog(`通常のログイン: ${username}としてのログインに失敗しました。`);
+            }
+        }
+        
+        function vulnerableLogin() {
+            const username = document.getElementById('vulnerable-username').value;
+            const password = document.getElementById('vulnerable-password').value;
+            
+            // 脆弱性のあるSQLクエリの生成（実際には実行されません）
+            const sqlQuery = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+            
+            document.getElementById('vulnerable-query').textContent = sqlQuery;
+            
+            // ここからはデモのためのシミュレーション
+            // 実際の攻撃パターンを示さないようにしますが、特定の入力でログインをバイパスできることを示します
+            const resultDiv = document.getElementById('vulnerable-result');
+            
+            // 通常のログイン試行
+            let user = users.find(u => u.username === username && u.password === password);
+            
+            // SQLインジェクションのシミュレーション（具体的な攻撃パターンは表示しない）
+            // これは概念を示すための非常に単純化されたチェックです
+            const hasSQLInjection = username.includes("'") || password.includes("'");
+            const bypassAuthentication = 
+                (username.includes("'") && username.toLowerCase().includes(" or ")) || 
+                (password.includes("'") && password.toLowerCase().includes(" or "));
+            
+            if (bypassAuthentication) {
+                // 認証バイパスのシミュレーション（実際の攻撃手法は表示しない）
+                resultDiv.innerHTML = `<div class="success">ログイン成功！（SQLインジェクションによる認証バイパス）</div>`;
+                addLog(`脆弱なログイン: SQLインジェクションによる認証バイパスを検出しました。`);
+            } else if (hasSQLInjection) {
+                // SQLインジェクションを試みたが失敗したケース
+                resultDiv.innerHTML = `<div class="error">SQL構文エラー: 無効なクエリ</div>`;
+                addLog(`脆弱なログイン: SQLインジェクションの試みを検出しましたが、構文エラーが発生しました。`);
+            } else if (user) {
+                // 通常の成功ケース
+                resultDiv.innerHTML = `<div class="success">ログイン成功！ようこそ、${user.username}さん（${user.role}）</div>`;
+                addLog(`脆弱なログイン: ${username}として正常にログインしました。`);
+            } else {
+                // 通常の失敗ケース
+                resultDiv.innerHTML = `<div class="error">ログイン失敗：ユーザー名またはパスワードが正しくありません。</div>`;
+                addLog(`脆弱なログイン: ${username}としてのログインに失敗しました。`);
+            }
+        }
+        
+        function secureLogin() {
+            const username = document.getElementById('secure-username').value;
+            const password = document.getElementById('secure-password').value;
+            
+            // 安全なSQLクエリのシミュレーション（プレースホルダーを使用）
+            const sqlQuery = `SELECT * FROM users WHERE username = ? AND password = ?`;
+            
+            // プレースホルダー部分を強調表示
+            document.getElementById('secure-query').innerHTML = 
+                sqlQuery.replace('?', '<span style="color: yellow;">?</span>').replace('?', '<span style="color: yellow;">?</span>') + 
+                `\n\nパラメータ:\n1. ${username}\n2. ${password}`;
+            
+            const resultDiv = document.getElementById('secure-result');
+            
+            // 通常のログイン処理（SQLインジェクションは効かない）
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                resultDiv.innerHTML = `<div class="success">ログイン成功！ようこそ、${user.username}さん（${user.role}）</div>`;
+                addLog(`安全なログイン: ${username}として正常にログインしました。`);
+            } else {
+                resultDiv.innerHTML = `<div class="error">ログイン失敗：ユーザー名またはパスワードが正しくありません。</div>`;
+                addLog(`安全なログイン: ${username}としてのログインに失敗しました。`);
+                
+                // SQLインジェクションの試みを検出
+                if (username.includes("'") || password.includes("'")) {
+                    addLog(`安全なログイン: SQLインジェクションの試みを検出しましたが、プリペアードステートメントにより防御されました。`);
+                }
+            }
+        }
+        
+        function addLog(message) {
+            const log = document.getElementById('action-log');
+            const entry = document.createElement('div');
+            entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // 初期ログ
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('SQLインジェクションデモページが読み込まれました。');
+        });
+    </script>
+</body>
+</html>
