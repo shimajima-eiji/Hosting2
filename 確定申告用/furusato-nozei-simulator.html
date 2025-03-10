@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ふるさと納税 上限額シミュレーター</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+    table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: right;
+    }
+    th {
+        background-color: #f5f5f5;
+        text-align: center;
+    }
+    .formula {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        font-family: "Times New Roman", serif;
+    }
+    .formula-explanation {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>ふるさと納税 上限額シミュレーター</h1>
+        <p>課税所得金額を入力してください：</p>
+        <input type="number" id="income" min="0" step="1000">
+        <button onclick="calculate()">計算する</button>
+        <div id="result" class="result"></div>
+
+        <div class="formula">
+            <h3>計算式</h3>
+            <p style="text-align: center;">上限額 = <span id="formula-with-values"></span></p>
+            <p>一般式：</p>
+            <p style="text-align: center;">
+                上限額 = \(\frac{課税所得金額 \times 10\% \times 20\%}{90\% - (所得税率 \times 1.021)\%} + 2,000円\)
+            </p>
+            <div class="formula-explanation">
+                <p>where:</p>
+                <ul>
+                    <li>2,000円は基礎控除額</li>
+                    <li>1.021は復興特別所得税率を考慮した係数</li>
+                    <li>20%は控除率</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>所得税率区分ごとの上限額一覧</h2>
+        <table id="taxTable">
+            <tr>
+                <th>課税所得金額</th>
+                <th>所得税率</th>
+                <th>上限額</th>
+            </tr>
+        </table>
+    </div>
+    
+    <script>
+        function calculate() {
+            const income = parseInt(document.getElementById('income').value);
+            const basicDeduction = 2000;
+            
+            // 所得税率の判定
+            let taxRate;
+            if (income <= 1950000) taxRate = 5;
+            else if (income <= 3300000) taxRate = 10;
+            else if (income <= 6950000) taxRate = 20;
+            else if (income <= 9000000) taxRate = 23;
+            else if (income <= 18000000) taxRate = 33;
+            else if (income <= 40000000) taxRate = 40;
+            else taxRate = 45;
+
+            // 新しい計算式に基づく上限額の計算
+            // limit = income*10%*20%/{90%-(taxRate*1.021)/100} + basicDeduction
+            const limit = Math.floor(
+                (income * 0.1 * 0.2) / (0.9 - (taxRate * 1.021) / 100) + basicDeduction
+            );
+            
+            // 結果の表示
+            document.getElementById('result').innerHTML = 
+                `あなたのふるさと納税上限額は：${limit.toLocaleString()}円です<br>
+                （適用される所得税率：${taxRate}％）`;
+
+            // テーブルの更新
+            const taxBrackets = [
+                { income: 1950000, rate: 5 },
+                { income: 3300000, rate: 10 },
+                { income: 6950000, rate: 20 },
+                { income: 9000000, rate: 23 },
+                { income: 18000000, rate: 33 },
+                { income: 40000000, rate: 40 }
+            ];
+    
+            const table = document.getElementById('taxTable');
+            // ヘッダー行以外をクリア
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+    
+            // 各区分の上限額を計算して表示
+            taxBrackets.forEach((bracket, index) => {
+                const row = table.insertRow();
+                const rangeCell = row.insertCell();
+                const rateCell = row.insertCell();
+                const limitCell = row.insertCell();
+    
+                const prevIncome = index === 0 ? 0 : taxBrackets[index - 1].income;
+                rangeCell.textContent = `${prevIncome.toLocaleString()}円～${bracket.income.toLocaleString()}円`;
+                rateCell.textContent = `${bracket.rate}%`;
+                const bracketLimit = Math.floor(
+                    (bracket.income * 0.1 * 0.2) / (0.9 - (bracket.rate * 1.021) / 100) + basicDeduction
+                );
+                limitCell.textContent = `${bracketLimit.toLocaleString()}円`;
+            });
+    
+            // 最後の区分（4,000万円超）を追加
+            const lastRow = table.insertRow();
+            lastRow.insertCell().textContent = '40,000,000円～';
+            lastRow.insertCell().textContent = '45%';
+            const lastLimit = Math.floor(
+                (40000001 * 0.1 * 0.2) / (0.9 - (45 * 1.021) / 100) + basicDeduction
+            );
+            lastRow.insertCell().textContent = `${lastLimit.toLocaleString()}円`;
+                // 計算式の表示を更新
+            const formulaWithValues = `
+                \\(\\frac{${income.toLocaleString()}円 \\times 10\\% \\times 20\\%}{90\\% - (${taxRate}\\% \\times 1.021)} + 2,000円 = ${limit.toLocaleString()}円\\)
+            `;
+            document.getElementById('formula-with-values').innerHTML = formulaWithValues;
+
+            // MathJAxによる数式の再レンダリング
+            MathJax.typesetPromise();
+        }
+        // MathJaxの読み込み
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+
+        // 初期表示時にも計算を実行
+        calculate();
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
+
