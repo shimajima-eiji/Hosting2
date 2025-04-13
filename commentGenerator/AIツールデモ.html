@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSVマスキングツール</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid #000;
+            box-sizing: border-box;
+            margin: 5px 0;
+        }
+        .button {
+            background-color: #ccc;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px 0;
+            max-width: 300px;
+        }
+        h3 {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <h3>ここにCSVの生データを投入します</h3>
+            <textarea id="rawData" placeholder="CSVデータを入力してください"></textarea>
+        </div>
+
+        <div class="section">
+            <button class="button" id="maskButton">個人情報マスキングボタン</button>
+        </div>
+
+        <div class="section">
+            <h3>マスキングCSV</h3>
+            <textarea id="maskedData" readonly></textarea>
+            <p>この結果でよければ、AIにコメントを考えてもらいます</p>
+        </div>
+
+        <div class="section">
+            <button class="button" id="generateCommentButton">コメント生成ボタン</button>
+        </div>
+
+        <div class="section">
+            <h3>生成結果</h3>
+            <textarea id="generatedComment" readonly></textarea>
+        </div>
+
+        <div class="section">
+            <p>議題に共有できるように名前のマスキングを戻します</p>
+            <button class="button" id="unmaskButton">マスキングを戻すボタン</button>
+            <h3>議題に共有する内容</h3>
+            <textarea id="shareContent" readonly></textarea>
+            <p>この内容でよければ、コピーボタンでクリップボードに転送します</p>
+        </div>
+
+
+        <div class="section">
+            <button class="button" id="copyButton">コピーボタン</button>
+            <p>コピーした内容をSlackに転送してください。</p>
+        </div>
+    </div>
+
+    <!-- スクリプトの読み込み順序 -->
+    <!-- 1. 設定ファイル（最初に読み込む） -->
+    <script src="config.js"></script>
+
+    <!-- 2. 共通ユーティリティとデータストア -->
+    <script src="utils.js"></script>
+    <script src="dataStore.js"></script>
+
+    <!-- 3. サービスモジュール -->
+    <script src="aiService.js"></script>
+
+    <!-- 4. 機能別スクリプト -->
+    <script src="maskButton.js"></script>
+    <script src="generateCommentButton.js"></script>
+    <script src="unmaskButton.js"></script>
+    <script src="copyButton.js"></script>
+
+    <!-- 5. メインスクリプト -->
+    <script src="main.js"></script>
+
+</body>
+</html>
