@@ -1,6 +1,8 @@
 # 日報コメント生成ツール
-日報を流し込んだら自動的にコメントをつけてくれる素敵ツール
+日報を流し込んだら自動的にコメントをつけてくれる素敵ツール  
 ブラウザで完結させるためにPureJSで完結
+
+https://shimajima-eiji.github.io/Hosting2/commentGenerator/
 
 ## 使い方
 1. config.jsにAPIキー入れたりプロンプト入れたりする
